@@ -1,0 +1,32 @@
+.game-board-container {
+  text-align: center;
+}
+.game-board {
+  margin: auto;
+}
+.game-board-container .board-row div {
+  display: table-cell;
+  height: 96px;
+  width: 96px;
+  border: 1px solid black;
+  text-align: center;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.board-row { 
+  display: table-row;
+}
+.score {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 2em;
+}
+.o-cell { 
+  background: url("O.png");
+}
+.x-cell { 
+  background: url("X.png");
+}
+.empty-cell {
+  background: none;
+}
