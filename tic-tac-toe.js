@@ -1,112 +1,40 @@
-angular.module('tic-tac-toe', [])
-.controller("GameController", [ '$scope', function($scope) {
+angular.module('tic-tac-toe', ['logic', 'ui.bootstrap']).controller("GameController", [ '$scope', 'GameLogic', '$uibModal', function($scope, gameLogic, $uibModal) {
 	
-	var USER_MARK = 'X';
-	var AI_MARK = '0';
+	$scope.state = gameLogic.initialState();
 	
-	$scope.board = parseState('X_________').board;
-	
-	function parseState(string) {
-		if (!string.match("^[X0_]{10}$")) {
-			throw "state must be represented as 10-character string of 'X', 'O' and '_'"
-		}
-		board = []
-		for (var i = 0; i < 3; ++i) {
-			board.push([]);
-			for (var j = 0; j < 3; ++j) {
-				board[i].push(string.charAt(1 + i * 3 + j));
-			}
-		}
-		return {
-			mine: string.charAt(0),
-			board: board
-		}
-	}
-	
-	function clone(state) {
-		var newBoard = [];
-		for (var i = 0; i < 3; ++i) {
-			newBoard.push(state.board[i].slice());
-		}
-		return { mine: state.mine, board: newBoard };
-	}
-
-	function invert(ch) {
-		return ch == '0' ? 'X' : '0';
-	}
-
-	function calculateNextMoves(state) {
-		var nextStates = [];
-		for (var i = 0; i < 3; ++i) {
-			for (var j = 0; j < 3; ++j) {
-				if (state.board[i][j] == '_') {
-					var next = clone(state);		
-					next.board[i][j] = state.mine;
-					next.mine = invert(state.mine);
-					nextStates.push({
-						state: next,
-						move: [i, j]
-					});
-				}
-			}
-		}	
-		return nextStates;
-	}
-
-	function getLine(board, startRow, startCol, dirRow, dirCol) {
-		var result = ""
-		for (var i = 0; i < 3; ++i) {
-			result += board[startRow + i * dirRow][startCol + i * dirCol];
-		}
-		return result;
-	}
-
-	function getWinningLine(mine) {
-		return mine + mine + mine;
-	}
-
-	function isWinningFor(board, mine) {
-		var winning = getWinningLine(mine);
-		return getLine(board, 0, 0, 0, 1) == winning ||
-			getLine(board, 1, 0, 0, 1) == winning ||
-			getLine(board, 2, 0, 0, 1) == winning ||
-			getLine(board, 0, 0, 1, 0) == winning ||
-			getLine(board, 0, 1, 1, 0) == winning ||
-			getLine(board, 0, 2, 1, 0) == winning ||
-			getLine(board, 0, 0, 1, 1) == winning ||
-			getLine(board, 0, 2, 1, -1) == winning;
-	}
-
-	function findBestMove(state) {
-		if (isWinningFor(state.board, state.mine)) {
-			return { result: 1, distance: 0 };
-		}
-		if (isWinningFor(state.board, invert(state.mine))) {
-			return { result: -1, distance: 0 };
-		}
-		var nextMoves = calculateNextMoves(state);
-		if (nextMoves.length == 0) {
-			return { result: 0, distance: 0 };
-		}
-		var bestMove = { result: 2 };
-		for (var i = 0; i < nextMoves.length; ++i) {
-			var move = findBestMove(nextMoves[i].state);
-			if (bestMove.result > move.result || bestMove.result == move.result && bestMove.distance > move.distance) {
-				bestMove.result = move.result;
-				bestMove.move = nextMoves[i].move;
-				bestMove.distance = move.distance + 1;
-			}
-		}
-		bestMove.result = -bestMove.result;
-		return bestMove;
-	}
-	
+  function showModal(messageToBeShown) {
+    $uibModal.open({ 
+      templateUrl: 'modal.html',
+      controller: 'ModalController',
+      resolve: {
+        message: function() {
+          return messageToBeShown;
+        }
+      }
+    })
+  }
+  
+  function gameOverHandler(whoWon) {
+    if (whoWon == gameLogic.USER_WON) {
+      showModal('You\'re winner!©')
+    }
+    if (whoWon == gameLogic.AI_WON) {
+      showModal('You lose, better luck next time!')
+    }
+    if (whoWon == gameLogic.TIE) {
+      showModal('It\'s a tie!')
+    }
+  }
+  
+  this.newGame = function() {
+    $scope.state = gameLogic.initialState();
+  }
+  
 	this.clickedOn = function(i, j) {
-		if ($scope.board[i][j] != '_') {
-			return;
-		}
-		$scope.board[i][j] = USER_MARK;
-		var best = findBestMove({ mine: AI_MARK, board: $scope.board });
-		$scope.board[best.move[0]][best.move[1]] = AI_MARK;
+    gameLogic.makeMoveAt($scope.state, i, j, gameOverHandler);
 	}
+}]);
+
+angular.module('tic-tac-toe').controller('ModalController', ['$scope', 'message', function($scope, message) {
+  $scope.modalMessage = message;
 }]);

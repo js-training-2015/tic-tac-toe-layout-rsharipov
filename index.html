@@ -24,14 +24,16 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
-	
-	<script src="tic-tac-toe.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script>
+
+    <script src="ui-bootstrap-tpls-0.14.3.min.js"></script>
+    <script src="game-logic.js"></script>
+    <script src="tic-tac-toe.js"></script>
 	
 	<div class="container">
 		<nav class="navbar navbar-default">
 		  <div class="container-fluid">
-          <button type="button" class="btn btn-default navbar-btn">New Game</button>
+          <button type="button" class="btn btn-default navbar-btn" ng-click="game.newGame()">New Game</button>
 		  </div>
 		</nav>
     
@@ -39,8 +41,8 @@
       <div class="game-board">
         <div class="row" ng-repeat="i in [0, 1, 2]">
           <div class="col-xs-4 cell" ng-repeat="j in [0, 1, 2]" 
-			ng-class="{'x-cell' : board[i][j] == 'X', 'o-cell' : board[i][j] == '0', 'empty-cell' : board[i][j] == '_' }"
-			ng-click="game.clickedOn(i, j)"></div>
+              ng-class="{'x-cell' : state.board[i][j] == 'X', 'o-cell' : state.board[i][j] == '0', 'empty-cell' : state.board[i][j] == '_' }"
+              ng-click="game.clickedOn(i, j)"></div>
         </div>
       </div>
     </div>
@@ -48,7 +50,7 @@
 	</div>
   
   <div class="score">
-    <p>You 1 : 1 CPU</p>
+    <p>You {{state.userScore}} : {{state.cpuScore}} CPU</p>
   </div>
   
   </body>
