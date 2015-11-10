@@ -4,7 +4,7 @@ angular.module('tic-tac-toe', ['logic', 'ui.bootstrap']).controller("GameControl
 	
   function showModal(messageToBeShown) {
     $uibModal.open({ 
-      templateUrl: 'modal.html',
+      templateUrl: 'templates/modal.html',
       controller: 'ModalController',
       resolve: {
         message: function() {
