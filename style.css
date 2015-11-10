@@ -24,6 +24,7 @@
   width: 33%;
   border: 1px solid black;
   text-align: center;
+  transition: background-position 0.5s ease-in;
 }
 .score {
   margin-top: 20px;

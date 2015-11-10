@@ -1,7 +1,9 @@
-angular.module("logic", []).service("GameLogic", function() {
+angular.module("logic", []).service("GameLogic", [ '$timeout', function($timeout) {
   
-  var USER_MARK = 'X';
-	var AI_MARK = '0';
+  const USER_MARK = 'X';
+	const AI_MARK = '0';
+  const AI_TURN_TIMEOUT = 500;
+  const BOARD_RESET_TIMEOUT = 2000;
   
   function parseState(string) {
 		if (!string.match("^[X0_]{10}$")) {
@@ -130,7 +132,9 @@ angular.module("logic", []).service("GameLogic", function() {
     else {
       return;
     }
-    state.board = initialState().board;
+    $timeout(function() {
+      state.board = initialState().board;
+    }, BOARD_RESET_TIMEOUT);    
   }
   
   function makeMoveAt(state, i, j, overListener) {
@@ -140,10 +144,13 @@ angular.module("logic", []).service("GameLogic", function() {
 		}
 		board[i][j] = USER_MARK;
 		var best = findBestMove({ mine: AI_MARK, board: board });
-    if (typeof(best.move) != 'undefined') {
-      board[best.move[0]][best.move[1]] = AI_MARK;
-    }
-    handleGameOver(state, overListener);
+    
+    $timeout(function() {
+      if (typeof(best.move) != 'undefined') {
+        board[best.move[0]][best.move[1]] = AI_MARK;
+      }
+      handleGameOver(state, overListener);
+    }, AI_TURN_TIMEOUT);
   }
   
   return {
@@ -153,4 +160,4 @@ angular.module("logic", []).service("GameLogic", function() {
     AI_WON: AI_WON,
     TIE: TIE
   }
-});
+}]);
