@@ -62,7 +62,7 @@ angular.module('tic-tac-toe', [])
 	}
 
 	function getWinningLine(mine) {
-		return mine.repeat(3);
+		return mine + mine + mine;
 	}
 
 	function isWinningFor(board, mine) {
